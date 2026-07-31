@@ -1,37 +1,35 @@
-# TheLook Ecommerce — SQL Analytics Portfolio
+# TheLook Ecommerce: SQL Analytics Portfolio
 
-**SQL (BigQuery) analysis of the public `thelook_ecommerce` dataset** — customer lifecycle & RFM segmentation, purchase funnel analysis, churn drivers, product analytics, and revenue forecasting.
+**SQL (BigQuery) analysis of the public `thelook_ecommerce` dataset**: Customer lifecycle & Recency, Frequency and Monetary (RFM) segmentation, purchase funnel analysis, churn drivers, product analytics and revenue forecasting.
 
-## About
+## 1. About the project
 
-This project analyses the public `bigquery-public-data.thelook_ecommerce` dataset end-to-end using SQL (BigQuery), moving from raw orders and events data to business-ready insights. It covers:
+The public dataset simulates an ecommerce company. Using SQL (BigQuery), the project moves from raw orders and events data to insights. It covers the follwing topics:
 
-- **Business growth & revenue trends** — monthly revenue, year-on-year growth, new vs. returning customer revenue
-- **RFM customer segmentation** — Recency, Frequency and Monetary scoring, and lifecycle-based customer segments
-- **Funnel & conversion analysis** — product → basket → purchase drop-off, session-level and intent-based funnels, segmented by traffic source, browser, city and session duration
-- **Churn analysis** — behavioural drivers of customer churn
-- **Product analytics** — market basket / product affinity and repeat-purchase drivers
-- **Revenue forecasting** — a trend × seasonality decomposition model with a 12-month forecast, including model evaluation and limitations
+1) **Business growth & revenue trends**: Monthly revenue, year-on-year growth, new vs. returning customer revenue
+2) **RFM customer segmentation**: RFM scoring, ifecycle based customer segments
+3) **Funnel & conversion analysis**: Funnels (product → basket → purchase drop-off, session-level and intent-based), segmented by traffic source, browser, city as well as session duration
+4) **Churn analysis**: Covers behavioural drivers of customer churn
+5) **Product analytics**: Incl. market basket, product affinity and repeat-purchase drivers
+6) **Revenue forecasting**: Build a trend and seasonality decomposition model with a 12-month forecast, incl. model evaluation and finally limitations
 
-All queries are written in standard SQL against BigQuery's public dataset. Query outputs are included as screenshots directly beneath the relevant query, and each section carries a one-line summary of what it covers.
+All queries are written in standard SQL against BigQuery's public dataset. Query outputs are included as screenshots directly beneath the relevant query. Each section carries a one-line summary of what it covers.
 
-### Key findings
+### 2. Key findings
 
-- Around 70% of orders contain a single item — low basket size, high-frequency purchasing behaviour
-- Conversion rate is flat (~26%) across traffic source and browser, but varies with session duration — engagement time is the strongest behavioural signal identified
-- Basket abandonment, rather than product discovery, is the main drop-off point in the funnel
-- Revenue shows consistent long-term growth with a clear seasonal pattern (weaker Q1, stronger Q4)
+- Around 70% of orders contain a single item & low basket size, high-frequency purchasing behaviour
+- Conversion rate is relatively flat, around 26%, across traffic source and browser. However, it varies with session duration. Engagement time is the strongest behavioural signal identified
+- In the funnel, basket abandonment was identified as the main drop-off point 
+- Revenue shows consistent long-term growth with a clear seasonal pattern, eg. weaker Q1, stronger Q4.
 
-### Limitations
+### 3. Limitations
 
-- The forecasting model assumes a linear trend and fixed seasonality — it does not account for structural breaks or external drivers such as promotions, holidays or pricing changes
-- No backtesting or confidence intervals are included on the forecast
-- Flat conversion rates across traffic source and browser may indicate the dataset is synthetic/normalised rather than reflecting a genuine real-world signal
-- Segment sizes vary by geography, so city-level findings carry some noise risk
+- Various analyses (e.g. flat conversion rates across traffic sources) indicate the dataset is synthetic or was normalised, rather than reflecting a real-world business 
+- The forecasting model assumes a linear trend and fixed seasonality. Specifically, it does not account for structural breaks or external drivers such as promotions, holidays or pricing changes
+- Segment sizes vary by geography. Therefore, city-level findings may carry some noise
 
-> This document was consolidated from a longer working notebook — duplicated draft sections and repeated query iterations were removed, and content was reorganised under clear headings with section summaries for readability.
 
-## Table of Contents
+## 4. Table of Contents
 
 - [The Relationships](#the-relationships)
 - [What each table represents](#what-each-table-represents)
@@ -76,88 +74,28 @@ All queries are written in standard SQL against BigQuery's public dataset. Query
 - [Model Limitations](#model-limitations)
 - [Conclusion](#conclusion)
 
----
 
-The dataset TheLook Ecommerce Dataset simulates an ecommerce company.
-
-Core business flow:
-
-Users → browse products → traffic source → orders → repeat purchases
-
-Meaning:
-
-- users arrive through channels
-
-- they buy products
-
-- some return
-
-- some churn
-
-- some spend more
-
-That's the foundation of almost all analyses.
-
-# The Relationships
+# 5. The relationships
 
 *How the five core tables in the dataset (`users`, `orders`, `order_items`, `products`, `events`) relate to one another.*
 
 ## Core schema
 
-users
+## 5.1. users
 
-↓
+- One row = one customer
+- It contains e.g. acquisition channel, country, age, gender or traffic source
 
-orders
-
-↓
-
-order_items
-
-↓
-
-products
-
-And separately:
-
-users
-
-↓
-
-events
-
-# What each table represents
-
-*A breakdown of each table's purpose and the business questions it can answer.*
-
-## users
-
-One row = one customer
-
-Contains:
-
-- acquisition channel
-
-- country
-
-- age
-
-- gender
-
-- traffic source
-
-Questions:
+Questions it answers:
 
 - Where did users come from?
-
 - Which channels bring valuable users?
 
-## orders
+## 5.2. orders
 
 One row = one order
 
-Contains:
-
+It includes, 
 - order timestamp
 
 - user_id
