@@ -632,7 +632,6 @@ Takeaways:
 Results show:
 
 - There are many low/mid-value purchases
-
 - A few high-ticket orders contributing disproportionate revenue
 
 Currently, results suspect: *growth = acquisition*
