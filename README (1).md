@@ -1,4 +1,4 @@
-# TheLook ecommerce: SQL analytics portfolio
+# Ecommerce Analytics with SQL (BigQuery)
 
 **SQL (BigQuery) analysis of the public `thelook_ecommerce` dataset**: Customer lifecycle & Recency, Frequency and Monetary (RFM) segmentation, purchase funnel analysis, churn drivers, product analytics and revenue forecasting.
 
@@ -172,30 +172,7 @@ ORDER BY month;
 
 ![Query result screenshot](images/image25.png)
 
-### 1. Strong long-term growth
 
-Revenue increases consistently from 2020 -> 2025, with no prolonged
-declines.
-
-- Early period (2020-2021): low but steadily rising revenue
-- Mid period (2022-2023): moderate, stable growth
-- Recent period (2024-2025) ->sharp acceleration
-
--> This suggests the business is scaling rather than stagnating.
-
-### 2. Growth is accelerating is not linear
-
-The curve is upward, this indicates:
-
-- Growth rate is increasing over time -> Each year contributes more revenue than the previous one
-
-### 3. Strong spike in the latest months
-
-The last few bars show a noticeable jump ( roughly 500-600k range):
-
-- Consistent month-over-month (MoM) expansion
-- No visible long-term downturns
-- Strong recent momentum
 
 ```sql
 -- 2.4. Revenue growth decomposition
@@ -209,7 +186,6 @@ GROUP BY month
 ORDER BY month;
 ```
 
-Revenue growth is driven primarily by user growth, not higher spend per user:
 
 - total_unique_users grows massively over time (increased roughly: from 12 to 4375 -> that's a  about a 365x increase)
 - revenue_per_user stays relatively stable (80 to 90)
