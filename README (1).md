@@ -28,44 +28,13 @@ All queries are written in standard SQL against BigQuery's public dataset. Query
 - The forecasting model assumes a linear trend and fixed seasonality. Specifically, it does not account for structural breaks or external drivers such as promotions, holidays or pricing changes
 - Segment sizes vary by geography. Therefore, city-level findings may carry some noise
 
-
-## 4. Table of contents
-
-- [5. The relationships](#5-the-relationships)
-- [Metrics](#metrics)
-- [RFM customer segmentation & lifecycle analytics](#rfm-customer-segmentation-lifecycle-analytics-project-summary)
-- [Business questions](#business-questions)
-- [Dataset structure](#dataset-structure)
-- [Analytical approach](#analytical-approach)
-- [Key analyses performed](#key-analyses-performed)
-- [2. Purchase frequency analysis](#2-purchase-frequency-analysis)
-- [3. Revenue waterfall](#3-revenue-waterfall-modelling)
-- [4. RFM ](#4-rfm-feature-engineering)
-- [5. RFM scoring](#5-rfm-scoring)
-- [6. Customer segmentation](#6-customer-segmentation)
-- [7. Funnel analysis (using events)](#4-funnel-analysis-using-events)
-- [7.1. Core ecommerce funnel](#core-ecommerce-funnel)
-- [7.2. Conversion rate by traffic source](#conversion-rate-by-traffic-source)
-- [7.3. Funnel analysis interpretation](#funnel-analysis-interpretation)
-- [7.4. Traffic source analysis](#traffic-source-analysis)
-- [7.5. Browser analysis](#browser-analysis)
-- [7.6. Geographic analysis](#geographic-analysis)
-- [7.7. Session duration analysis](#session-duration-analysis)
-- [8. Churn analysis](#6-churn-analysis)
-- [9. Product analytics](#7-product-analytics)
-- [9.1. . product affinity / market basket analysis](#a-product-affinity-market-basket-analysis)
-- [9.2. repeat-driving products](#b-repeat-driving-products)
-- [10. Time series revenue forecasting](#time-series-revenue-forecasting-trend-seasonality-model)
-- [Conclusion](#conclusion)
-
-
-## 5. The relationships
+## 4. The relationships
 
 *How the five core tables in the dataset (`users`, `orders`, `order_items`, `products`, `events`) relate to one another.*
 
 ## Core schema
 
-## 5.1. Users
+## 4.1. Users
 
 - One row = one customer
 - It contains e.g. acquisition channel, country, age, gender or traffic source
@@ -75,7 +44,7 @@ Questions it answers:
 - Where did users come from?
 - Which channels bring valuable users?
 
-## 5.2. Orders
+## 4.2. Orders
 
 One row = one order
 
@@ -90,7 +59,7 @@ Questions:
 - Repeat purchase behaviour?
 - Revenue trends?
 
-## Order_items
+## 4.3. Order_items
 
 One row = one product inside an order
 
@@ -102,7 +71,7 @@ Questions:
 - Product affinity
 - Category revenue
 
-## Products
+## 4.4. Products
 
 Product metadata:
 
@@ -116,7 +85,7 @@ Questions:
 - Which categories drive profit?
 - Which products create repeat behaviour?
 
-## Events
+## 4.5. Events
 Includes:
 - page views
 - sessions
@@ -162,7 +131,7 @@ each order contains about 1.45 items on avg.
 ![Query result screenshot](images/image9.png)
 
 ```sql
--- 1.2. understand
+-- 1.2.
 WITH order_sizes AS (
 SELECT
 order_id,
@@ -1246,28 +1215,25 @@ ORDER BY sessions DESC;
 
 *Defining behavioural churn (there are no subscriptions in this dataset) and linking it back to RFM, funnel and intent signals.*
 
-Churn here is behavioural, not contractual — no subscriptions in
-TheLook. Defined as, for example, a user inactive for 90 days. The next
-question is who churns, when, and what predicts it.
+Churn here is behavioural, not contractual — no subscriptions in TheLook. Defined as, for example, a user inactive for 90 days. The next question is who churns, when, and what predicts it.
 
 # Useful features
 
 *The features available for predicting churn: order frequency, basket size, recency, categories purchased, traffic source.*
 
-Already available: order frequency, basket size, recency, categories
-purchased, traffic source — this becomes predictive analytics.
+Already available: order frequency, basket size, recency, categories purchased, traffic source, this becomes predictive analytics.
 
 **How churn connects to what's already built:**
 
-- RFM base: Recency → directly related to churn; Frequency → engagement strength; Monetary → value risk
+- RFM base: Recency -> directly related to churn; Frequency -> engagement strength; Monetary -> value risk
 - Funnel: drop-off behaviour, intent failure
-- Intent segmentation: Buyers vs Cart Abandoners vs Browsers
+- Intent segmentation: Buyers vs cart abandoners vs browsers
 
 Churn = extreme low recency + low frequency + weak funnel engagement.
 
 ```sql
 -- =========================================================
--- Funnel + Intent + Churn Feature Table (User-Level)
+-- Funnel + intent + churn feature table (user-level)
 -- =========================================================
 WITH session_features AS (
 SELECT
@@ -1328,56 +1294,9 @@ GROUP BY user_id;
 
 ![Query result screenshot](images/image14.png)
 
-```sql
--- =========================================================
--- CHURN FEATURE COMPARISON: churned vs active
--- =========================================================
--- (aggregates the feature table above by churned flag)
-```
-
 ![Query result screenshot](images/image6.png)
 
-**What actually drives churn here:**
-
-1. Recency (dominant signal)
-2. Session frequency
-3. Monetary value (weakly)
-
-**What doesn't explain churn:** intent segmentation, funnel stage
-distribution, behaviour type (buyer vs browser etc.).
-
-So the model is currently learning "churn = inactivity problem," not
-"churn = behavioural quality problem." Improving churn prediction would
-need rolling time-window features (7/30/90-day activity), session
-frequency decay, time-between-sessions, and engagement velocity (trend,
-not level).
-
 # 7. Product analytics
-
-*Moving from customer-centric to product-centric analysis.*
-
-# A. product affinity / market basket analysis
-
-*Which products are frequently bought together, for recommendations and bundling.*
-
-Question: which products are bought together (e.g. shoes + socks,
-jacket + jeans)? Useful for recommendations, bundling and upselling.
-
-# B. repeat-driving products
-*Which first-purchased products are most associated with repeat custom.*
-
-Question: which first-purchased products create repeat customers? Some
-products drive one-time purchases only, others create loyalty.
-
-**Priority order for the wider project:**
-
-1. Cohort retention matrix, retention curves, LTV by acquisition source
-2. Funnel analysis, conversion analysis, RFM segmentation
-3. Churn prediction, product affinity, forecasting
-
-Revenue is separated into **trend** (long-term growth) and
-**seasonality** (recurring monthly fluctuations):
-Observed Revenue = Trend + Seasonality + Noise
 
 ```sql
 WITH product_daily_metrics AS (
@@ -1400,15 +1319,6 @@ ORDER BY revenue DESC
 LIMIT 20;
 ```
 
-Revenue is concentrated among premium apparel brands (Nike, Jordan,
-Canada Goose, The North Face). The highest revenue-generating products
-sold relatively few units (7–13), so revenue looks driven mainly by
-price rather than volume — outerwear and premium activewear show up
-most often among top performers. Overall this looks like a
-premium-product revenue pattern rather than mass-volume retail, though
-the low unit sales even among top products suggest revenue is spread
-thin across a large catalogue, again consistent with the synthetic
-nature of the dataset.
 
 ![Query result screenshot](images/image32.png)
 
@@ -1450,15 +1360,7 @@ ORDER BY month;
 
 ![Query result screenshot](images/image5.png)
 
-Strong long-term exponential revenue growth with clear seasonal
-patterns (Q4 peaks, Q1 dips), though monthly volatility is high —
-again pointing either to a synthetic dataset structure or a highly
-event-driven business. Growth stays structurally positive across the
-whole timeline despite occasional sharp corrections.
-
-Revenue grows from ~507 (Jan 2019) to ~397,936 (Jun 2026) — roughly
-800x over the period. This isn't a seasonal-only business; it's a
-scaling growth system with seasonality layered on top.
+-> It's a scaling growth system with seasonality layered on top.
 
 ```sql
 -- =====================================================
@@ -1489,15 +1391,6 @@ ORDER BY month_of_year;
 
 ![Query result screenshot](images/image30.png)
 
-Revenue shows a clear seasonal pattern once yearly differences are
-adjusted for. Q1 consistently underperforms — January (0.70) and
-February (0.68) sit roughly 30% below the annual average — and revenue
-strengthens progressively through the year. Q4 is clearly the peak:
-October (1.26), November (1.25) and December (1.36) all run well above
-average, with December about 36% above a typical month. This lines up
-with a normal end-of-year sales cycle (holiday shopping, Black Friday,
-Cyber Monday, gifting season) rather than pure long-term growth.
-
 ```sql
 -- Year × month matrix, using normalised revenue (to remove the growth trend)
 SELECT
@@ -1507,16 +1400,10 @@ FROM seasonality_index
 ORDER BY year, month_of_year;
 ```
 
-The pattern holds up well year over year (2020–2025): January and
-February consistently land around 0.8–0.9 and 0.73–0.8, October around
-1.1–1.28, December around 1.18–1.59. There's no strong evidence the
-seasonal pattern is shifting over time — after normalising for each
-year's average, a consistent seasonal shape emerges, with a recurring
-Q4 uplift and a weaker start to the year.
 
 ```sql
 -- =====================================================
--- 3-Month Moving Average
+-- 3-Month moving average
 -- =====================================================
 WITH monthly_revenue AS (
 SELECT DATE_TRUNC(DATE(created_at), MONTH) AS month, SUM(sale_price) AS revenue
@@ -1530,15 +1417,10 @@ FROM monthly_revenue
 ORDER BY month;
 ```
 
-The 3-month moving average smooths short-term fluctuations and makes
-the underlying growth trend easier to read than the raw monthly
-revenue line.
-
 ```sql
--- =====================================================
--- Time Series Decomposition (Multiplicative)
--- Revenue = Trend × Seasonality × Residual
--- =====================================================
+-- =============================================================================================
+-- Time Series decomposition (Multiplicative approach: Revenue = Trend * Seasonality * Residual)
+-- =============================================================================================
 WITH monthly_revenue AS (
 SELECT DATE_TRUNC(DATE(created_at), MONTH) AS month, SUM(sale_price) AS revenue
 FROM `bigquery-public-data.thelook_ecommerce.order_items`
@@ -1575,12 +1457,6 @@ FROM fitted
 ORDER BY month;
 ```
 
-This is a cleaner decomposition than a simple year-average
-normalisation: it explicitly removes the trend first (3-month moving
-average), then estimates seasonality on the detrended series, which is
-much closer to how time series decomposition is usually done in
-forecasting and econometrics.
-
 ![Query result screenshot](images/image21.png)
 ![Query result screenshot](images/image19.png)
 ![Query result screenshot](images/image34.png)
@@ -1590,14 +1466,12 @@ forecasting and econometrics.
 
 *The assumptions underpinning the revenue forecasting model.*
 
-Forecast Revenue = Forecast Trend × Seasonal Index, assuming: (1) the
-long-term growth trend continues, (2) seasonal patterns stay as they
-were historically, (3) residual noise averages out (expected residual
-= 1).
+Forecast Revenue = Forecast Trend * Seasonal index, assuming: 
+(1) the long-term growth trend continues, 
+(2) seasonal patterns stay as they were historically, 
+(3) residual noise averages out (expected residual= 1).
 
-# Example: July 2026
-
-*A worked example of the forecast for a single month.*
+Example: July 2026
 
 | Metric | Value |
 |---|---|
@@ -1605,10 +1479,8 @@ were historically, (3) residual noise averages out (expected residual
 | Seasonal Index | 0.9869 |
 | Forecast Revenue | 556,393 |
 
-563,797 × 0.9869 = 556,393 — if the business keeps growing at its
-historical trend rate and July behaves like a typical July, revenue
-should land around 556k. Since July's seasonal factor is below 1, it's
-historically a touch weaker than the average month.
+563797 * 0.9869 = 556393. This indicates if the business keeps growing at its historical trend rate, also if July behaves like a typical July, revenue
+should land around 556k. However, since July's seasonal factor is below 1, it's historically a touch weaker than the average month.
 
 ```sql
 -- =====================================================
@@ -1642,38 +1514,9 @@ LEFT JOIN seasonality s ON EXTRACT(MONTH FROM ft.month) = s.month_of_year
 SELECT * FROM forecast ORDER BY month;
 ```
 
-# 📊 time series revenue forecasting (trend × seasonality model)
+Insights:
 
-*Building a trend × seasonality decomposition model in SQL to forecast the next 12 months of revenue.*
-
-## Overview
-
-A multiplicative time series forecasting model built entirely in SQL:
-Revenue = Trend × Seasonality × Residual — built to show how classical
-forecasting works, not to replace a proper forecasting library.
-
-## Methodology
-
-1. **Monthly revenue aggregation** — sum revenue by month
-2. **Trend estimation** — 3-month moving average smooths short-term volatility
-3. **Seasonality extraction** — detrend (revenue / trend), then average by calendar month
-4. **Residual analysis** — residual = revenue / (trend × seasonality); a good fit shows residuals scattered randomly around 1.0
-5. **Forecasting** — extend the trend forward using average monthly growth, then apply the seasonal index
-
-**12-month forecast example:**
-
-| Month | Forecast Trend | Seasonal Index | Forecast Revenue |
-|---|---|---|---|
-| 2026-07 | 563,797 | 0.99 | 556,393 |
-| 2026-08 | 570,054 | 1.03 | 584,991 |
-| 2026-09 | 576,311 | 0.93 | 534,445 |
-| 2026-10 | 582,568 | 0.99 | 576,297 |
-
-## Key insights
-
-Revenue shows a strong upward trend, a clear monthly seasonality
-pattern, and the model captures the structure reasonably well, with
-residuals mostly centred around 1.0.
+Revenue shows a strong upward trend, a clear monthly seasonality pattern, and the model captures the structure reasonably well, with residuals mostly centred around 1.0.
 
 ```sql
 -- =====================================================
@@ -1694,65 +1537,12 @@ FROM errors;
 
 # Forecast model evaluation
 
-*Evaluating forecast accuracy using error metrics.*
-
-| Metric | Result |
-|---|---|
-| MAE | 7,465 |
-| MAPE | 6.96% |
-
-Fitted values differ from actual monthly revenue by about 7,465 units
-on average. A MAPE of 6.96% is generally considered strong for business
-forecasting, so trend and seasonality together explain most of the
-systematic variation in monthly revenue.
-
-**Important methodological note:** this is an in-sample evaluation —
-trend and seasonal components were estimated on the full historical
-dataset and then compared against those same observations, so MAE/MAPE
-here measure goodness-of-fit, not true forecasting accuracy. A proper
-train/test split (fitting on historical data, then predicting held-out
-future periods) would be needed to evaluate real forecasting
-performance.
-
-# Business interpretation
-
-*What the forecast means in business terms.*
-
-The decomposition confirms two main drivers: a clear long-term upward
-**trend**, and a recurring **seasonal** pattern (Jan/Feb weak, building
-through the year, Oct–Dec strong, December strongest) — stable enough
-across years to suggest genuine recurring purchasing behaviour rather
-than one-off events.
-
-# Model limitations
-
-*The known limitations of the forecasting approach.*
-
-1. **Linear trend assumption** — future trend is projected at the
-   average historical monthly increase; growth could just as easily
-   accelerate, decelerate, plateau or break structurally.
-2. **Stable seasonality assumption** — assumes 2027 seasonality looks
-   like 2020–2026, which may not hold if the product mix, pricing,
-   market or customer behaviour shifts.
-3. **Moving average lag** — a 3-month moving average smooths noise well
-   but reacts slowly to sudden changes, so the model may underestimate
-   rapid growth or miss abrupt declines.
-4. **No external drivers** — relies purely on historical revenue, with
-   no marketing, economic, competitor or supply-chain signals.
-5. **Residuals not fully investigated** — the model assumes leftover
-   variation is random noise, but it could still hide unmodelled trend,
-   changing growth rates or additional seasonal effects.
-
-# Conclusion
-
-*Overall project conclusion.*
-
-The trend-seasonality decomposition gives a simple, interpretable
-forecasting framework that explains historical revenue well, and is
-suitable for strategic planning, budgeting and monthly reporting — but
-not for short-term tactical decisions, promotion forecasting or
-event-driven forecasting without additional modelling and external
-variables.
+Model limitations:
+1. Linear trend assumption: future trend is projected at the average historical monthly increase; growth could just as easily accelerate, decelerate, plateau or break structurally.
+2. Stable seasonality assumption: assumes 2027 seasonality looks like 2020–2026, which may not hold if the product mix, pricing, market or customer behaviour shifts.
+3. Moving average lag: a 3-month moving average smooths noise well but reacts slowly to sudden changes, so the model may underestimate rapid growth or miss abrupt declines.
+4. No external drivers: relies purely on historical revenue, with no marketing, economic, competitor or supply-chain signals.
+5. Residuals not fully investigated: the model assumes leftover variation is random noise, but it could still hide unmodelled trend, changing growth rates or additional seasonal effects.
 
 ```sql
 -- =====================================================
@@ -1815,53 +1605,29 @@ ORDER BY times_bought_together DESC
 LIMIT 50;
 ```
 
-## A/B testing
-
-### Conversion difference
+ A/B testing: Conversion difference
 
 The Treatment group converted at 8.44%, versus 8.53% for Control.
-
 Conversion Difference = CR_Treatment − CR_Control = 0.08436 − 0.08532 = −0.00096
 
-The Treatment group converted 0.096 percentage points lower than
-Control.
+-> The Treatment group converted 0.096 percentage points lower than Control.
 
-### Lift
+Lift
 
 ![Query result screenshot](images/image20.png)
 
-The Treatment group performed roughly 1.13% worse than Control.
-
-### Statistical significance
-
-A two-proportion z-test was used to check whether the difference is
-statistically significant.
-
+The Treatment group performed roughly 1.13% less than Control.
 ![Query result screenshot](images/image27.png)
 
-### Results summary
+Results summary
 
 ![Query result screenshot](images/image24.png)
 
-The difference isn't statistically significant. The Treatment group's
-slightly lower conversion rate is small relative to expected sampling
-variability and is more likely random chance than a real effect — the
-null hypothesis can't be rejected here.
+The difference isn't statistically significant. The Treatment group's slightly lower conversion rate is small relative to expected sampling variability. It's more likely random chance than a real effect, the null hypothesis can't be rejected here. Eventually, it doesn't support rolling out the treatment based on conversion alone.
 
-### Conclusion
+Limitations
 
-The experiment gives no evidence that the Treatment affects conversion
-performance. Although Treatment converted about 1.13% lower than
-Control, the effect wasn't statistically significant and doesn't
-support rolling out the treatment based on conversion alone.
-
-### Limitations
-
-- Users were assigned deterministically by user ID rather than through
-  true randomisation.
-- The analysis assumes no external factors influenced conversion
-  behaviour.
-- Only conversion rate was evaluated — revenue per user, average order
-  value and retention weren't considered.
-- This is based on historical ecommerce data and represents a
-  simulated experiment rather than a real production A/B test.
+- Users were assigned deterministically by user ID rather than through true randomisation.
+- The analysis assumes no external factors influenced conversion behaviour.
+- Only conversion rate was evaluated — revenue per user, average order  value and retention weren't considered.
+- This is based on historical ecommerce data and represents a simulated experiment rather than a real production A/B test.
