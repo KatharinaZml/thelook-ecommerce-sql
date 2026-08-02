@@ -243,8 +243,7 @@ ORDER BY month;
 
 Revenue growth is driven primarily by user growth, not higher spend per user:
 
-- total_unique_users grows massively over time (increased roughly: from
-12 to 4375 -> that's a  about a 365x increase)
+- total_unique_users grows massively over time (increased roughly: from 12 to 4375 -> that's a  about a 365x increase)
 - revenue_per_user stays relatively stable (80 to 90)
 
 ```sql
@@ -304,11 +303,6 @@ GROUP BY month
 ORDER BY month;
 ```
 
-Results show the business is heavily driven by **new customer acquisition**, with new-user revenue consistently higher than
-returning-user revenue across all months. However, returning user revenue grows steadily over time, indicating improving
-customer retention and stronger repeat purchasing behaviour as the business matures. By 2024-2026, returning customers contribute a
-substantial share of total revenue. This shows a transition toward more sustainable long-term growth.
-
 ```sql
 -- 2.7 How does each calendar month perform across different years?
 (seasonality)
@@ -322,17 +316,14 @@ GROUP BY 1,2,3
 ORDER BY month_num, year;
 ```
 
-1)  Example January -> Every month increases year-over-year.
-
-2)  Oct < Nov < Dec -
-
+1)  Example January -> Every month increases year-over-year (YoY).
+2)  Oct < Nov < Dec 
 Likely caused by:
 - holiday shopping
 - Black Friday and/ or Cyber Monday
 - gifting season / Christmas holidays
 
-3)  Many years show softer February performance. -> post-holiday
-    > slowdow
+3)  Many years show softer February performance which may be causes by post-holiday slowdown.
 
 ```sql
 -- 2.8. YoY growth
@@ -367,19 +358,17 @@ ORDER BY month_num, year;
 
 Results indicate that:
 
-- Revenue is growing every year for every month and often at very high
-    > rates early on (2019-2020) due to a small base.
-- From 2021-2024, growth stabilises to roughly +40% to +70% YoY,meaning steady expansion.
+- Revenue is growing every year for every month and often at very high rates early on (2019-2020) due to a small base.
+- From 2021-2024, growth stabilises to roughly +40% to +70% YoY, meaning steady expansion.
 - In 2025-2026, growth re-accelerates, with some months exceeding +100% YoY, suggesting a new growth push or structural change.
 
 What this implies:
-
 - The business is not growing because users spend much more each year (revenue per user is mostly stable).
-- It is growing mainly because of more users + strong seasonality (especially Q4 spikes).
-- 2026 shows a possible step-change in growth
+- It is growing mainly because of more users & strong seasonality (especially Q4 spikes).
+- 2026 shows a possible step change in growth
 
 ```sql
--- 2.9. Revenue=Users*Orders per User*Average Order Value (AOV) trend
+-- 2.9. Revenue = Users * Orders per User * Average Order Value (AOV) trend
 -> is revenue growth coming from price or volume?
 WITH monthly AS (
 SELECT
@@ -404,10 +393,10 @@ GROUP BY month
 ORDER BY month;
 ```
 
-- Assumption: Revenue = Users*Orders per User*AOV
+- Assumption: Revenue = Users * Orders per user * AOV
 
 Results show:
-- Growth is mainly volume driven: User growth, followed by a late increase in orders per user, while AOV stays relatively stable(80-90€)
+- Growth is mainly volume driven: User growth, followed by a late increase in orders per user, while AOV stays relatively stabl e(80-90€)
 - Over time, customers are not spending more per order
 - Pricing or inflation effects are limited
 - basket size is relatively consistent
@@ -536,22 +525,13 @@ ORDER BY first_cohort_month;
 
 Takeaways:
 
-- The cohort retention analysis shows that most customers make a purchase in their first month (M0 ≈ 99%), however, historically very few returned in later months.
-
-- From 2019--2024, M1 retention was generally low at around 1-3%. This means the business relied heavily on new customer acquisition.
-
-- Starting around spring 2025, retention improved with M1 retention. This indicates more customers are coming back to purchase again. This improvement indicates why returning customer revenue is increasing, since stronger retention compounds overime and raises customer lifetime value.
-
-- Overall, the business appears to have become much better at converting first-time buyers into repeat customers beginningaround 2025.
-
+- From 2019-2024, M1 retention was around 1-3%. This is in line with previous results where results indicated the business generated revenue with customer acquisition.
 Results show:
 
 - There are many low/mid-value purchases
 - A few high-ticket orders contributing disproportionate revenue
 
-Currently, results suspect: *growth = acquisition*
-
-Therefore, retention analysis supports to check:
+Retention analysis aims to check:
 - If growth is sustainable
 - users become loyal
 - future revenue compounds naturally
@@ -560,7 +540,6 @@ Without retention:
 - the company is "buying growth"
 
 With strong retention:
-
 - revenue becomes exponentially scalable
   
 ```sql
@@ -617,7 +596,7 @@ order by product_p50 DESC;
 
 ![Query result screenshot](images/image28.png)
 
-Across user acquisition channels (Fb, Adwords, YT, E-Mail, Organic) user session behaviour appears highly similar. Session duration, purchase behaviour and browsing depth are nearly identical across sources.
+Across user acquisition channels (Facebook (FB), Adwords, YouTube (YT), E-Mail, Organic) user session behaviour appear similar. Session duration, purchase behaviour and browsing depth are nearly identical across sources.
 
 ```sql
 -- 3.3 Which acquisition channels create the best long-term customers?
@@ -645,7 +624,7 @@ ORDER BY avg_purchases_per_user DESC
 
 ![Query result screenshot](images/image26.png)
 
-All acquisition channels show almost identical long-term behaviour in sessions, purchases and lifespan. Channel type doesn't look like a strong differentiator of long-term customer value in this dataset.
+All acquisition channels show almost similar behaviour in sessions, purchases and lifespan. Channel type doesn't look like a strong differentiator of long-term customer value in this dataset.
 
 ```sql
 -- 3.4. Cohort retention by channel
@@ -708,10 +687,8 @@ GROUP BY 1, 2
 ORDER BY 1, 2;
 ```
 
-## Business growth dynamics: summary
-- growth is real
-- acquisition-driven
-- not primarily price-driven
+## Summary of business growth 
+- growth is acquisition-driven
 
 ## Customer behaviour
 - small basket sizes dominate
@@ -732,7 +709,7 @@ ORDER BY 1, 2;
 
 RFM: Recency, Frequency, Monetary.
 
-You classify users into groups:
+Classification:
 
 | Segment | Meaning |
 |---|---|
@@ -744,7 +721,7 @@ You classify users into groups:
 
 # Metrics
 
-*Definitions of the core Recency, Frequency and Monetary (RFM) metrics value.*
+*Definitions of the core RFM metrics value.*
 
 ## Recency
 
@@ -752,15 +729,8 @@ Days since last order.
 - Recency Days = Current Date − Last Purchase Date
 - Customer Lifespan = Last Purchase Date − First Purchase Date
 
-## Frequency
-Total orders.
-
-## Monetary
-Total spend.
-
-# Why this matters
-
-*Why RFM metrics are useful for CRM targeting, retention campaigns and personalisation.*
+- Frequency: Total orders.
+- Monetary Total spend.
 
 This directly supports:
 - CRM targeting
@@ -768,7 +738,6 @@ This directly supports:
 - personalisation
 - churn prevention
 
-This is one of the highest-value analyses businesses actually use.
 
 ```sql
 -- =========================================================
@@ -930,21 +899,6 @@ ORDER BY customers DESC;
 
 ![Query result screenshot](images/image31.png)
 
-Segmentation looks informative, though the large "At Risk + Churn Risk" share suggests retention is the main business challenge.
-
-**Summary**: the RFM pipeline is structurally sound and passes core data
-integrity checks.
-
-# RFM customer segmentation & lifecycle analytics — project summary
-
-*Overview of the RFM segmentation project: aims, scope and approach.*
-
-## Overview
-
-This project analyses customer lifecycle behaviour using the TheLook Ecommerce Dataset from Google BigQuery Public Datasets, moving beyond
-descriptive KPI reporting toward behavioural analytics, lifecycle modelling, customer segmentation, retention thinking and revenue quality analysis.
-
-# Business questions
 
 *The core business questions the RFM analysis sets out to answer.*
 - Which customers are most valuable?
@@ -954,73 +908,30 @@ descriptive KPI reporting toward behavioural analytics, lifecycle modelling, cus
 - How much revenue is lost through returns and cancellations?
 - Which customer segments drive long-term value?
 
-
 Core relationship: users -> orders -> order_items
 
-# RFM insights
+1. RFM insights: 
+Revenue growth is driven mainly by increasing user acquisition and rising order volume — average spend per customer stays relatively stable.
 
-*The headline findings from the RFM segmentation.*
+2. Retention & churn
+ Repeat customer revenue is improving, but long-term churn risk remains substantial: acquisition is strong, retention is the bigger optimisation opportunity.
 
-## Growth dynamics
+3. Customer value concentration
 
-Revenue growth is driven mainly by increasing user acquisition and
-rising order volume — average spend per customer stays relatively
-stable.
+Customer value is uneven. a relatively small subset of customers generates disproportionate business value.
 
-## Retention & churn
-
-Repeat customer revenue is improving, but long-term churn risk remains
-substantial: acquisition is strong, retention is the bigger
-optimisation opportunity.
-
-## Customer value concentration
-
-Customer value is uneven — a relatively small subset of customers
-generates disproportionate business value.
-
-## Revenue quality
-
-Cancelled and returned orders materially affect realised customer
-value; high-return customers may reduce operational profitability.
-
-# Technical skills demonstrated
-
-*The SQL and analytical techniques used throughout the RFM work.*
-
-**SQL:** CTE pipelines, window functions, cohort analysis, feature
-engineering, quantile scoring, lifecycle analysis, behavioural
-aggregation, revenue decomposition.
-
-**Analytical concepts:** granularity control, customer lifecycle
-modelling, behavioural segmentation, RFM analysis, retention analytics,
-decomposition logic, customer feature engineering.
+4. Revenue quality
+Cancelled and returned orders materially affect realised customer value; high-return customers may reduce operational profitability.
 
 # 4. Funnel analysis (using events)
 
-*Introduction to the purchase funnel analysis built from the `events` table.*
+Session -> Product view -> Add to cart -> Checkout -> Purchase
 
-This is where behavioural analytics starts — the events table unlocks
-browsing behaviour, session analysis, drop-offs and conversion funnels.
-
-# Core ecommerce funnel
-
-*Definition of the product → cart → purchase funnel used throughout this analysis.*
-
-Session → Product View → Add to Cart → Checkout → Purchase
-
-# Conversion rate by traffic source
-
-*Building the session- and user-level funnel, then breaking conversion down by traffic source, browser, city and session duration.*
-
-Question: which channels convert best?
-
-Conversion Rate = Purchasing Users / Total Visitors
-
-Segmented by traffic source, country, device, gender and campaign.
+Question: which channels convert best? -> Conversion Rate = Purchasing Users / Total Visitors
 
 ```sql
 -- =========================================================
--- 0) Exploration: Understand event structure
+-- 0) Exploration: Understanding the event structure
 -- =========================================================
 SELECT *
 FROM `bigquery-public-data.thelook_ecommerce.events`
@@ -1039,19 +950,11 @@ GROUP BY event_type
 ORDER BY events DESC;
 ```
 
-Most user activity sits at the product-viewing and cart stages. Many
-users browse and add to cart, but only a smaller share complete a
-purchase — pointing to drop-off between cart and checkout (friction,
-abandonment, price sensitivity or low intent). That said, this dataset
-behaves differently from real-world ecommerce data: home page visits
-are relatively low, and funnel behaviour looks artificially smooth,
-suggesting the dataset is at least partially synthetic and probably
-built mainly for SQL practice rather than realistic behavioural
-modelling.
+Most user activity sits at the product-viewing and cart stages. Many users browse and add to cart, but only a smaller share complete a purchase, pointing to drop-off between cart and checkout (friction, abandonment, price sensitivity or low intent). That said, this dataset behaves differently from real-world ecommerce data: home page visits are relatively low, and funnel behaviour looks artificially smooth, suggesting the dataset is at least partially synthetic and probably built mainly for SQL practice rather than realistic behavioural modelling.
 
 ```sql
 -- =========================================================
--- 2) Conversion Metrics
+-- 2) Conversion metrics
 -- =========================================================
 SELECT
 ROUND(
@@ -1073,12 +976,11 @@ FROM `bigquery-public-data.thelook_ecommerce.events`;
 
 ![Query result screenshot](images/image23.png)
 
-Nearly 69% of purchases were cancelled, which is unusually high and
-worth flagging as a dataset quirk rather than a real business signal.
+Nearly 69% of purchases were cancelled, which is unusually high and worth flagging as a dataset quirk rather than a real business signal.
 
 ```sql
 -- =========================================================
--- 3) Funnel Drop-off Analysis
+-- 3) Funnel drop-off analysis
 -- =========================================================
 WITH funnel AS (
 SELECT
@@ -1098,11 +1000,7 @@ FROM funnel;
 
 ![Query result screenshot](images/image4.png)
 
-Around 30% of product interactions didn't progress to cart (so ~70%
-did, which is decent engagement), and around 70% of cart interactions
-didn't convert to purchase (~30% did). One caveat: a single user can
-generate multiple events, so a session/user-level funnel gives a more
-accurate picture of actual customer journeys.
+Around 30% of product interactions didn't progress to cart (so ~70% did, which is decent engagement). Around 70% of cart interactions didn't convert to purchase (~30% did). A single user can generate multiple events, so a session or user-level funnel gives a more accurate picture of actual customer journeys.
 
 ```sql
 -- =========================================================
@@ -1127,14 +1025,11 @@ FROM session_funnel;
 
 ![Query result screenshot](images/image1.png)
 
-About 36.7% of sessions that viewed a product never added anything to
-cart (so ~63.3% did progress to cart). Of the sessions that reached
-cart, around 58% didn't proceed to purchase — only ~42% of cart
-sessions converted.
+About 36.7% of sessions that viewed a product never added anything to cart (so ~63.3% did progress to cart). Of the sessions that reached cart, around 58% didn't proceed to purchase — only ~42% of cart sessions converted.
 
 ```sql
 -- =========================================================
--- 5) Foundation: Core Funnel Table
+-- 5) Foundation: Core funnel table
 -- =========================================================
 WITH full_session_funnel as (
 SELECT
@@ -1155,17 +1050,13 @@ GROUP BY session_id, user_id
 )
 ```
 
-This table is 1 row = 1 session, combining engagement intensity
-(total_events), engagement depth (session_duration_minutes), browsing
-breadth (viewed_department), shopping intent (viewed_product), purchase
-intent (viewed_cart) and conversion outcome (purchased) into one clean
-session-quality table.
+This table is 1 row = 1 session, combining engagement intensity (total_events), engagement depth (session_duration_minutes), browsing breadth (viewed_department), shopping intent (viewed_product), purchase intent (viewed_cart) and conversion outcome (purchased) into one clean session-quality table.
 
 ![Query result screenshot](images/image3.png)
 
 ```sql
 -- =========================================================
--- 6) Segment Conversion: Funnel by Traffic Source
+-- 6) Segment conversion: Funnel by traffic source
 -- =========================================================
 SELECT
 traffic_source,
@@ -1182,14 +1073,8 @@ ORDER BY purchase_rate_percentage DESC;
 
 ![Query result screenshot](images/image12.png)
 
-Traffic sources behave almost identically across the whole funnel —
-conversion differs only marginally, suggesting traffic source has
-little impact on conversion in this dataset. Regardless of acquisition
-source, users reach product pages and add to cart similarly, which
-points to the checkout experience itself as the bottleneck rather than
-the acquisition channel. Organic traffic has the highest cart rate
-(~63.6%) but the lowest purchase rate (~26.4%) — a small gap, and one
-more data point supporting the "partially synthetic dataset" read.
+Traffic sources behave similarly  across the whole funnel. This means conversion differs marginally, suggesting traffic source has
+little impact on conversion in this dataset. Users reach product pages and add to cart similarly, which points to the checkout experience itself as the bottleneck rather than the acquisition channel. Organic traffic has the highest cart rate (around 64%) but the lowest purchase rate ( around 26%) — a small gap, and onen more data point supporting the "partially synthetic dataset" read.
 
 ```sql
 WITH session_funnel AS (
@@ -1254,41 +1139,19 @@ UNION ALL
 SELECT 'session_duration' AS dimension, segment, total_sessions, purchase_rate FROM duration_funnel;
 ```
 
-# Funnel analysis interpretation
+## Funnel analysis interpretation
 
-*Interpreting the funnel results across all segmentation dimensions.*
+A session-level funnel table was built to see how users move through the ecommerce journey from browsing to purchase, capturing engagement depth, conversion outcomes and attributes like traffic source, browser and city. Conversion behaviour was segmented across traffic sources, browsers, cities and session duration groups.
 
-## Overview
-
-A session-level funnel table was built to see how users move through
-the ecommerce journey from browsing to purchase, capturing engagement
-depth, conversion outcomes and attributes like traffic source, browser
-and city. Conversion behaviour was segmented across traffic sources,
-browsers, cities and session duration groups.
-
-# Traffic source analysis
-
-*Conversion rate by traffic source.*
-
-Purchase conversion was highly consistent across channels:
-
-| Traffic Source | Purchase Rate |
-|---|---|
-| Facebook | 26.63% |
+ Facebook | 26.63% |
 | YouTube | 26.53% |
 | Adwords | 26.53% |
 | Email | 26.52% |
 | Organic | 26.38% |
 
-This small a spread suggests acquisition source has minimal influence
-on conversion here — in real ecommerce data you'd usually expect bigger
-gaps between paid, organic and email traffic, given differences in
-intent and targeting quality. The uniformity again points to a
-synthetic or simplified dataset.
+This small a spread suggests acquisition source has minimal impact on conversion here. The uniformity again points to a synthetic or simplified dataset.
 
-# Browser analysis
-
-*Conversion rate by browser.*
+## Browser analysis
 
 | Browser | Purchase Rate |
 |---|---|
@@ -1297,13 +1160,9 @@ synthetic or simplified dataset.
 | Firefox | 26.47% |
 | IE | 26.51% |
 
-Browser-level analysis can usually surface technical friction or
-checkout issues, but the near-identical rates here suggest no
-meaningful browser-related differences.
+Browser-level analysis can usually surface technical friction or checkout issues, but the near identical rates here suggest no meaningful browser-related differences.
 
-# Geographic analysis
-
-*Conversion rate by city.*
+## Geographic analysis
 
 | City | Purchase Rate |
 |---|---|
@@ -1313,14 +1172,9 @@ meaningful browser-related differences.
 | Qingdao | 23.02% |
 | Wuhan | 24.28% |
 
-City-level segmentation shows more variation than traffic source or
-browser, suggesting geography may relate more to purchasing behaviour
-than acquisition channel does — though some cities have small sample
-sizes, so this needs a cautious read.
+City-level segmentation shows more variation than traffic source or browser. This may suggest geography may relate more to purchasing behaviour than acquisition channel does — though some cities have small sample sizes, so this needs a cautious read.
 
-# Session duration analysis
-
-*Conversion rate by session duration — the strongest signal found.*
+## Session duration analysis
 
 | Session Duration | Purchase Rate |
 |---|---|
@@ -1330,149 +1184,9 @@ sizes, so this needs a cautious read.
 | 16–30 min | 2.65% |
 | 30+ min | 39.90% |
 
-Session duration has the strongest relationship with conversion by
-far. Very short sessions show almost no purchasing; 1–5 minute sessions
-convert best. Conversion dips sharply at 16–30 minutes before rising
-again for 30+ minute sessions — an irregular pattern that, in a
-real-world setting, might reflect either purchase intent or checkout
-friction, but here likely reflects the dataset's synthetic structure.
+Session duration has the strongest relationship with conversion. Very short sessions show almost no purchasing; 1–5 minute sessions convert best. Conversion dips sharply at 16–30 minutes before rising again for 30+ minute sessions. This may reflect the dataset's synthetic structure.
 
-# Overall conclusion
-
-*Summary of what drives (and doesn't drive) conversion in this funnel.*
-
-Session duration was the strongest observable driver of purchase
-likelihood, while traffic source and browser barely moved the needle.
-Overall the dataset is well suited to practising SQL-based behavioural
-analytics and funnel modelling, even though some patterns look more
-uniform than you'd expect in a real ecommerce business.
-
-# 1. What your results actually mean (clean interpretation layer)
-
-*A plain-language read of the funnel results, section by section.*
-
-## A. traffic source (flat conversion rates)
-
-### Interpretation
-
-If all channels sit around ~26% conversion, traffic source isn't
-differentiating user intent, and acquisition-quality differences don't
-show up in this dataset — either it's synthetic/normalised, or the
-traffic sources genuinely aren't behaviourally distinct.
-
-### Analytical implication
-
-No evidence of channel-based selection effects on conversion.
-
-### Interview framing worth remembering
-
-"This is unusual in real-world data and suggests either controlled
-generation or missing upstream acquisition heterogeneity" — that's the
-kind of observation that signals a stronger analytical read than just
-reporting the numbers.
-
-## B. browser (also flat)
-
-### Interpretation
-
-No measurable UX friction differences across browsers, checkout and
-product flow look technically uniform, and there's no device-specific
-optimisation signal.
-
-### Analytical implication
-
-Browser isn't a driver of conversion variance here.
-
-## C. city (moderate variance)
-
-### Interpretation
-
-Geography shows some signal — likely a proxy for income, shipping
-speed, product availability or cultural differences — but sample sizes
-vary, so smaller cities carry a real risk of noise.
-
-### Analytical implication
-
-Geo may hold a weak but genuine behavioural signal.
-
-## D. session duration (strong signal)
-
-This is the most important finding in the funnel work.
-
-### Interpretation
-
-A non-linear relationship: very short sessions show no intent, medium
-sessions convert best, and very long sessions show mixed intent
-(exploration or friction).
-
-### Analytical insight
-
-Conversion isn't monotonic with engagement time — worth remembering,
-since it's easy to assume "longer session = more interested."
-
-# 2. What you did well (analytical maturity signals)
-
-*A self-assessment of the analytical techniques applied in the funnel work.*
-
-- **Behavioural abstraction** — events → sessions → funnels
-- **Multi-dimensional segmentation** — traffic source, browser, city, duration
-- **Rate-based thinking** — product_rate, cart_rate, purchase_rate
-- **Drop-off decomposition** — product → cart, cart → purchase
-
-# 4. Next steps (very important)
-
-*Planned next steps: intent scoring and a more granular funnel segmentation.*
-
-## Step 1 — add intent segmentation
-
-Instead of only session duration, add product-view intensity, cart
-engagement depth and multi-event sessions — e.g. low intent, browsing,
-high intent.
-
-## Step 2 — build "conversion path types"
-
-Rather than just rates, classify session behaviour patterns:
-
-| Type | Behaviour |
-|---|---|
-| Quick buyers | product → purchase fast |
-| Browsers | product only |
-| Hesitant buyers | cart → no purchase |
-| Explorers | long sessions, no cart |
-
-This is much more powerful than rates alone.
-
-## Step 3 — combine funnel + RFM
-
-RFM tells you customer value, funnel tells you behaviour — combining
-them lets you ask, for example, whether VIP customers behave
-differently in the funnel. That's a genuinely portfolio-level insight.
-
-## Step 4 — add causality thinking
-
-Right now the analysis is observing correlations. The next question is
-whether session duration *causes* conversion — probably not; more
-likely, intent drives both duration and conversion. That's classic
-confounding-variable reasoning.
-
-# 5. Your current level (honest assessment)
-
-*A candid assessment of the analysis' current depth.*
-
-**Strong points:** solid SQL fluency, correct funnel construction,
-correct session modelling, correct segmentation thinking.
-
-**Next upgrade needed:** causal interpretation, behavioural clustering,
-intent modelling, action-oriented insights.
-
-# 6. What you should do next (clear roadmap)
-
-*A roadmap for extending the funnel analysis further.*
-
-1. Session intent scoring — low/medium/high intent sessions
-2. Funnel by intent — compare conversion rates by intent class
-3. RFM × funnel merge — e.g. do VIP users get faster funnels, do churn-risk users have higher drop-off
-4. Path analysis (advanced) — sequence patterns like product → product → cart → purchase
+## Consistency check
 
 ```sql
 -- Data consistency check
@@ -1528,13 +1242,6 @@ ORDER BY sessions DESC;
 
 ![Query result screenshot](images/image29.png)
 
-Around 27% of sessions end in a purchase; most others browse or
-abandon cart. Cart abandoners show the highest engagement among
-non-converters, so conversion loss looks concentrated at the decision
-stage rather than product discovery. Buyers show noticeably higher
-interaction intensity, which fits with conversion being tied to deeper
-engagement — though buyer session-duration figures look inflated,
-possibly a quirk of how sessions are defined in this dataset.
 # 6. Churn analysis
 
 *Defining behavioural churn (there are no subscriptions in this dataset) and linking it back to RFM, funnel and intent signals.*
