@@ -25,6 +25,12 @@ The public dataset simulates an ecommerce company. Using SQL (BigQuery), the pro
 
 - Various analyses (e.g. flat conversion rates across traffic sources) indicate the dataset is synthetic or was normalised, rather than reflecting a real-world business 
 - The forecasting model assumes a linear trend and fixed seasonality. Specifically, it does not account for structural breaks or external drivers such as promotions, holidays or pricing changes
+
+
+
+
+
+
 - Segment sizes vary by geography. Therefore, city-level findings may carry some noise
 
 ## 4. The relationships
@@ -936,7 +942,6 @@ FROM `bigquery-public-data.thelook_ecommerce.events`;
 
 ![Query result screenshot](images/image23.png)
 
-Nearly 69% of purchases were cancelled, which is unusually high and worth flagging as a dataset quirk rather than a real business signal.
 
 ```sql
 -- =========================================================
@@ -1033,8 +1038,7 @@ ORDER BY purchase_rate_percentage DESC;
 
 ![Query result screenshot](images/image12.png)
 
-Traffic sources behave similarly  across the whole funnel. This means conversion differs marginally, suggesting traffic source has
-little impact on conversion in this dataset. Users reach product pages and add to cart similarly, which points to the checkout experience itself as the bottleneck rather than the acquisition channel. Organic traffic has the highest cart rate (around 64%) but the lowest purchase rate ( around 26%) — a small gap, and onen more data point supporting the "partially synthetic dataset" read.
+
 
 ```sql
 WITH session_funnel AS (
@@ -1470,8 +1474,7 @@ Example: July 2026
 | Seasonal Index | 0.9869 |
 | Forecast Revenue | 556,393 |
 
-563797 * 0.9869 = 556393. This indicates if the business keeps growing at its historical trend rate, also if July behaves like a typical July, revenue
-should land around 556k. However, since July's seasonal factor is below 1, it's historically a touch weaker than the average month.
+563797 * 0.9869 = 556393.
 
 ```sql
 -- =====================================================
