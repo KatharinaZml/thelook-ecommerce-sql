@@ -6,14 +6,13 @@
 
 The public dataset simulates an ecommerce company. Using SQL (BigQuery), the project moves from raw orders and events data to insights. It covers the follwing topics:
 
-1) **Business growth & revenue trends**: Monthly revenue, year-on-year growth, new vs. returning customer revenue
-2) **RFM customer segmentation**: RFM scoring, ifecycle based customer segments
-3) **Funnel & conversion analysis**: Funnels (product → basket → purchase drop-off, session-level and intent-based), segmented by traffic source, browser, city as well as session duration
-4) **Churn analysis**: Covers behavioural drivers of customer churn
-5) **Product analytics**: Incl. market basket, product affinity and repeat-purchase drivers
-6) **Revenue forecasting**: Build a trend and seasonality decomposition model with a 12-month forecast, incl. model evaluation and finally limitations
+1) Business growth & revenue trends: Monthly revenue, year-on-year growth, new vs. returning customer revenue
+2) RFM customer segmentation: RFM scoring, ifecycle based customer segments
+3) Funnel & conversion analysis: Funnels (product → basket → purchase drop-off, session-level and intent-based), segmented by traffic source, browser, city as well as session duration
+4) Churn analysis: Covers behavioural drivers of customer churn
+5) Product analytics: Incl. market basket, product affinity and repeat-purchase drivers
+6) Revenue forecasting: Build a trend and seasonality decomposition model with a 12-month forecast, incl. model evaluation and finally limitations
 
-All queries are written in standard SQL against BigQuery's public dataset. Query outputs are included as screenshots directly beneath the relevant query. Each section carries a one-line summary of what it covers.
 
 ### 2. Key findings
 
@@ -119,14 +118,10 @@ FROM `bigquery-public-data.thelook_ecommerce.order_items`
 UNION ALL
 SELECT 'events' AS table_name, COUNT(*) AS row_count
 FROM `bigquery-public-data.thelook_ecommerce.events`;
--- the numbers suggest that users are more likely to place orders
-containing a single item. 181422 order items / 125180 orders ≈1.45 ->
+-- the numbers suggest that users are more likely to place orders containing a single item. 181422 order items / 125180 orders ≈1.45 ->
 ```
 
-each order contains about 1.45 items on avg.
-
-*-- That implies: 1. many orders contain 1 item, 2. some contain 2 or*
-*more items, 3. large multi-item carts are probably uncommon*
+-- each order contains about 1.45 items on avg. -> That implies: 1. many orders contain 1 item, 2. some contain 2 or more items, 3. large multi-item carts are probably uncommon
 
 ![Query result screenshot](images/image9.png)
 
@@ -153,13 +148,11 @@ ORDER BY items_per_order;
 
 ![Query result screenshot](images/image15.png)
 
-- About **70% of all orders contain only one item**.
-- Roughly **20% contain two items**.
-- Orders with **3 or more items are relatively rare** (around 10%
-    > combined).
+- About 70% of all orders contain only one item.
+- Roughly 20% contain two items.
+- Orders with 3 or more items are relatively rare (around 10%combined).
 
-This indicates that customer purchasing behaviour is dominated by quick,
-low-basket-size transactions rather than large shopping carts.
+This indicates that customer purchasing behaviour is dominated by quick, low-basket-size transactions rather than large shopping carts.
 
 ```sql
 -- 2.3. What does the cohort look like?
@@ -180,9 +173,9 @@ declines.
 
 - Early period (2020-2021): low but steadily rising revenue
 - Mid period (2022-2023): moderate, stable growth
-- Recent period (2024-2025): **sharp acceleration**
+- Recent period (2024-2025) ->sharp acceleration
 
-**->** This suggests the business is scaling rather than stagnating.
+-> This suggests the business is scaling rather than stagnating.
 
 ### 2. Growth is accelerating is not linear
 
@@ -688,11 +681,9 @@ Classification:
 | New Customers | recently acquired |
 | Big Spenders | high monetary value |
 
-# Metrics
+Metrics: Definitions of the core RFM metrics value.
 
-*Definitions of the core RFM metrics value.*
-
-## Recency
+Recency
 
 Days since last order.
 - Recency Days = Current Date − Last Purchase Date
@@ -1629,5 +1620,5 @@ Limitations
 
 - Users were assigned deterministically by user ID rather than through true randomisation.
 - The analysis assumes no external factors influenced conversion behaviour.
-- Only conversion rate was evaluated — revenue per user, average order  value and retention weren't considered.
+- Only conversion rate was evaluated: revenue per user, average order  value and retention weren't considered.
 - This is based on historical ecommerce data and represents a simulated experiment rather than a real production A/B test.
