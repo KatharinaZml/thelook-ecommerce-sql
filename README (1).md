@@ -33,48 +33,33 @@ All queries are written in standard SQL against BigQuery's public dataset. Query
 
 - [5. The relationships](#5-the-relationships)
 - [Metrics](#metrics)
-- [Why this matters](#why-this-matters)
-- [RFM customer segmentation & lifecycle analytics — project summary](#rfm-customer-segmentation-lifecycle-analytics-project-summary)
+- [RFM customer segmentation & lifecycle analytics](#rfm-customer-segmentation-lifecycle-analytics-project-summary)
 - [Business questions](#business-questions)
 - [Dataset structure](#dataset-structure)
 - [Analytical approach](#analytical-approach)
 - [Key analyses performed](#key-analyses-performed)
 - [2. Purchase frequency analysis](#2-purchase-frequency-analysis)
-- [3. Revenue waterfall modelling](#3-revenue-waterfall-modelling)
-- [4. RFM feature engineering](#4-rfm-feature-engineering)
+- [3. Revenue waterfall](#3-revenue-waterfall-modelling)
+- [4. RFM ](#4-rfm-feature-engineering)
 - [5. RFM scoring](#5-rfm-scoring)
 - [6. Customer segmentation](#6-customer-segmentation)
-- [Key business insights](#key-business-insights)
-- [Technical skills demonstrated](#technical-skills-demonstrated)
-- [4. Funnel analysis (using events)](#4-funnel-analysis-using-events)
-- [Core ecommerce funnel](#core-ecommerce-funnel)
-- [Conversion rate by traffic source](#conversion-rate-by-traffic-source)
-- [Funnel analysis interpretation](#funnel-analysis-interpretation)
-- [Traffic source analysis](#traffic-source-analysis)
-- [Browser analysis](#browser-analysis)
-- [Geographic analysis](#geographic-analysis)
-- [Session duration analysis](#session-duration-analysis)
-- [Overall conclusion](#overall-conclusion)
-- [1. What your results actually mean (clean interpretation layer)](#1-what-your-results-actually-mean-clean-interpretation-layer)
-- [2. What you did well (analytical maturity signals)](#2-what-you-did-well-analytical-maturity-signals)
-- [4. Next steps (very important)](#4-next-steps-very-important)
-- [5. Your current level (honest assessment)](#5-your-current-level-honest-assessment)
-- [6. What you should do next (clear roadmap)](#6-what-you-should-do-next-clear-roadmap)
-- [6. Churn analysis](#6-churn-analysis)
-- [Useful features](#useful-features)
-- [7. Product analytics](#7-product-analytics)
-- [A. product affinity / market basket analysis](#a-product-affinity-market-basket-analysis)
-- [B. repeat-driving products](#b-repeat-driving-products)
-- [What the model is assuming](#what-the-model-is-assuming)
-- [Example: July 2026](#example-july-2026)
-- [📊 time series revenue forecasting (trend × seasonality model)](#time-series-revenue-forecasting-trend-seasonality-model)
-- [Forecast model evaluation](#forecast-model-evaluation)
-- [Business interpretation](#business-interpretation)
-- [Model limitations](#model-limitations)
+- [7. Funnel analysis (using events)](#4-funnel-analysis-using-events)
+- [7.1. Core ecommerce funnel](#core-ecommerce-funnel)
+- [7.2. Conversion rate by traffic source](#conversion-rate-by-traffic-source)
+- [7.3. Funnel analysis interpretation](#funnel-analysis-interpretation)
+- [7.4. Traffic source analysis](#traffic-source-analysis)
+- [7.5. Browser analysis](#browser-analysis)
+- [7.6. Geographic analysis](#geographic-analysis)
+- [7.7. Session duration analysis](#session-duration-analysis)
+- [8. Churn analysis](#6-churn-analysis)
+- [9. Product analytics](#7-product-analytics)
+- [9.1. . product affinity / market basket analysis](#a-product-affinity-market-basket-analysis)
+- [9.2. repeat-driving products](#b-repeat-driving-products)
+- [10. Time series revenue forecasting](#time-series-revenue-forecasting-trend-seasonality-model)
 - [Conclusion](#conclusion)
 
 
-# 5. The relationships
+## 5. The relationships
 
 *How the five core tables in the dataset (`users`, `orders`, `order_items`, `products`, `events`) relate to one another.*
 
@@ -96,35 +81,25 @@ One row = one order
 
 It includes, 
 - order timestamp
-
 - user_id
-
 - status
-
 - total sale amount
 
 Questions:
-
 - How often do users buy?
-
 - Repeat purchase behaviour?
-
 - Revenue trends?
 
 ## Order_items
 
 One row = one product inside an order
 
-Important:
-
+Relevant :
 - one order can contain multiple products
 
 Questions:
-
 - Basket analysis
-
 - Product affinity
-
 - Category revenue
 
 ## Products
@@ -132,46 +107,31 @@ Questions:
 Product metadata:
 
 - category
-
 - brand
-
 - cost
-
 - retail price
 
 Questions:
 
 - Which categories drive profit?
-
 - Which products create repeat behaviour?
 
 ## Events
-
-This is VERY important later.
-
-Contains:
-
+Includes:
 - page views
-
 - sessions
-
 - carts
-
 - clicks
-
 - timestamps
 
 This enables:
 
 - attribution
-
 - funnel analysis
-
 - behavioural segmentation
-
 - causal reasoning
 
-SQL Queries:
+SQL queries:
 
 ```sql
 -- 1) Data exploration
@@ -194,7 +154,7 @@ FROM `bigquery-public-data.thelook_ecommerce.events`;
 containing a single item. 181422 order items / 125180 orders ≈1.45 ->
 ```
 
-each order contains about 1.45 items on average.
+each order contains about 1.45 items on avg.
 
 *-- That implies: 1. many orders contain 1 item, 2. some contain 2 or*
 *more items, 3. large multi-item carts are probably uncommon*
@@ -225,9 +185,7 @@ ORDER BY items_per_order;
 ![Query result screenshot](images/image15.png)
 
 - About **70% of all orders contain only one item**.
-
 - Roughly **20% contain two items**.
-
 - Orders with **3 or more items are relatively rare** (around 10%
     > combined).
 
@@ -252,28 +210,23 @@ Revenue increases consistently from 2020 -> 2025, with no prolonged
 declines.
 
 - Early period (2020-2021): low but steadily rising revenue
-
 - Mid period (2022-2023): moderate, stable growth
-
 - Recent period (2024-2025): **sharp acceleration**
 
 **->** This suggests the business is scaling rather than stagnating.
 
 ### 2. Growth is accelerating is not linear
 
-The curve is **convex upward**, meaning:
+The curve is upward, this indicates:
 
-- Growth rate is increasing over time -> Each year contributes more
-    > revenue than the previous one
+- Growth rate is increasing over time -> Each year contributes more revenue than the previous one
 
 ### 3. Strong spike in the latest months
 
 The last few bars show a noticeable jump ( roughly 500-600k range):
 
-- Consistent month-over-month expansion
-
+- Consistent month-over-month (MoM) expansion
 - No visible long-term downturns
-
 - Strong recent momentum
 
 ```sql
@@ -288,12 +241,10 @@ GROUP BY month
 ORDER BY month;
 ```
 
-Revenue growth is driven primarily by user growth, not higher spend per
-user:
+Revenue growth is driven primarily by user growth, not higher spend per user:
 
 - total_unique_users grows massively over time (increased roughly: from
-12 to 4375 -> that's a ~365x increase)
-
+12 to 4375 -> that's a  about a 365x increase)
 - revenue_per_user stays relatively stable (80 to 90)
 
 ```sql
@@ -315,10 +266,8 @@ ORDER BY first_month;
 
 ![Query result screenshot](images/image10.png)
 
-Monthly new users have grown steadily over time, indicating that overall
-growth is strongly driven by user acquisition. Growth accelerated
-strongly from late 2024 onward, with monthly new users rising sharply
-and reaching over 3k by early 2026. This suggests acquisition efforts or
+Monthly new users have grown steadily over time, indicating that overall growth is strongly driven by user acquisition. Growth accelerated
+strongly from late 2024 onward, with monthly new users rising sharply and reaching over 3k by early 2026. This suggests acquisition efforts or
 market demand intensified in the most recent period
 
 ```sql
@@ -355,14 +304,10 @@ GROUP BY month
 ORDER BY month;
 ```
 
-Results show the business is heavily driven by **new customer
-acquisition**, with new-user revenue consistently higher than
-returning-user revenue across all months. However,
-returning user revenue grows steadily over time, indicating improving
-customer retention and stronger repeat purchasing behaviour as the
-business matures. By 2024-2026, returning customers contribute a
-substantial share of total revenue. This shows a transition toward more
-sustainable long-term growth.
+Results show the business is heavily driven by **new customer acquisition**, with new-user revenue consistently higher than
+returning-user revenue across all months. However, returning user revenue grows steadily over time, indicating improving
+customer retention and stronger repeat purchasing behaviour as the business matures. By 2024-2026, returning customers contribute a
+substantial share of total revenue. This shows a transition toward more sustainable long-term growth.
 
 ```sql
 -- 2.7 How does each calendar month perform across different years?
@@ -382,13 +327,8 @@ ORDER BY month_num, year;
 2)  Oct < Nov < Dec -
 
 Likely caused by:
-
 - holiday shopping
-
-- Black Friday
-
-- Cyber Monday
-
+- Black Friday and/ or Cyber Monday
 - gifting season / Christmas holidays
 
 3)  Many years show softer February performance. -> post-holiday
@@ -429,21 +369,13 @@ Results indicate that:
 
 - Revenue is growing every year for every month and often at very high
     > rates early on (2019-2020) due to a small base.
-
-- From 2021-2024, growth stabilises to roughly +40% to +70% YoY,
-    > meaning steady expansion.
-
-- In 2025-2026, growth re-accelerates, with some months exceeding
-    > +100% YoY, suggesting a new growth push or structural change.
+- From 2021-2024, growth stabilises to roughly +40% to +70% YoY,meaning steady expansion.
+- In 2025-2026, growth re-accelerates, with some months exceeding +100% YoY, suggesting a new growth push or structural change.
 
 What this implies:
 
-- The business is not growing because users spend much more each year
-    > (revenue per user is mostly stable).
-
-- It is growing mainly because of more users + strong seasonality
-    > (especially Q4 spikes).
-
+- The business is not growing because users spend much more each year (revenue per user is mostly stable).
+- It is growing mainly because of more users + strong seasonality (especially Q4 spikes).
 - 2026 shows a possible step-change in growth
 
 ```sql
@@ -475,15 +407,9 @@ ORDER BY month;
 - Assumption: Revenue = Users*Orders per User*AOV
 
 Results show:
-
-- Growth is mainly volume driven: User growth, followed by a late
-    > increase in orders per user, while AOV stays relatively stable
-    > (80-90€)
-
+- Growth is mainly volume driven: User growth, followed by a late increase in orders per user, while AOV stays relatively stable(80-90€)
 - Over time, customers are not spending more per order
-
 - Pricing or inflation effects are limited
-
 - basket size is relatively consistent
 
 ```sql
@@ -538,8 +464,7 @@ FROM `bigquery-public-data.thelook_ecommerce.orders` o
 INNER JOIN user_first_purchase ufp
 USING(user_id)
 ),
--- Step 4: (numerator by period) identify users active in each
-lifecycle month
+-- Step 4: (numerator by period) identify users active in each lifecycle month
 returning_user_table AS (
 SELECT
 first_cohort_month,
@@ -611,46 +536,33 @@ ORDER BY first_cohort_month;
 
 Takeaways:
 
-- The cohort retention analysis shows that most customers make a
-    > purchase in their first month (M0 ≈ 99%), however, historically
-    > very few returned in later months.
+- The cohort retention analysis shows that most customers make a purchase in their first month (M0 ≈ 99%), however, historically very few returned in later months.
 
-- From 2019--2024, M1 retention was generally low at around 1-3%. This
-    > means the business relied heavily on new customer acquisition.
+- From 2019--2024, M1 retention was generally low at around 1-3%. This means the business relied heavily on new customer acquisition.
 
-- Starting around spring 2025, retention improved with M1 retention
-    > rising to 5--14%. This indicates more customers are coming back to
-    > purchase again. This improvement indicates why returning customer
-    > revenue is increasing, since stronger retention compounds over
-    > time and raises customer lifetime value.
+- Starting around spring 2025, retention improved with M1 retention. This indicates more customers are coming back to purchase again. This improvement indicates why returning customer revenue is increasing, since stronger retention compounds overime and raises customer lifetime value.
 
-- Overall, the business appears to have become much better at
-    > converting first-time buyers into repeat customers beginning
-    > around 2025.
+- Overall, the business appears to have become much better at converting first-time buyers into repeat customers beginningaround 2025.
 
 Results show:
 
 - There are many low/mid-value purchases
-
 - A few high-ticket orders contributing disproportionate revenue
 
 Currently, results suspect: *growth = acquisition*
 
 Therefore, retention analysis supports to check:
-
 - If growth is sustainable
-
 - users become loyal
-
 - future revenue compounds naturally
 
 Without retention:
-
 - the company is "buying growth"
 
 With strong retention:
 
 - revenue becomes exponentially scalable
+  
 ```sql
 -- 3.2. Which acquisition channels create the best long-term customers?
 -- step 1: session-level dataset
@@ -671,8 +583,7 @@ group by
 user_id,
 session_id,
 traffic_source),
---step 2: distribution of product views (Product view quantiles by
-channel)
+--step 2: distribution of product views (Product view quantiles by channel)
 quantiles as (
 select
 traffic_source,
@@ -706,9 +617,7 @@ order by product_p50 DESC;
 
 ![Query result screenshot](images/image28.png)
 
-Across user acquisition channels (Fb, Adwords, YT, E-Mail, Organic) user
-session behaviour appears highly similar. Session duration, purchase
-behaviour and browsing depth are nearly identical across sources.
+Across user acquisition channels (Fb, Adwords, YT, E-Mail, Organic) user session behaviour appears highly similar. Session duration, purchase behaviour and browsing depth are nearly identical across sources.
 
 ```sql
 -- 3.3 Which acquisition channels create the best long-term customers?
@@ -736,9 +645,7 @@ ORDER BY avg_purchases_per_user DESC
 
 ![Query result screenshot](images/image26.png)
 
-All acquisition channels show almost identical long-term behaviour in
-sessions, purchases and lifespan. Channel type doesn't look like a
-strong differentiator of long-term customer value in this dataset.
+All acquisition channels show almost identical long-term behaviour in sessions, purchases and lifespan. Channel type doesn't look like a strong differentiator of long-term customer value in this dataset.
 
 ```sql
 -- 3.4. Cohort retention by channel
@@ -802,25 +709,21 @@ ORDER BY 1, 2;
 ```
 
 ## Business growth dynamics: summary
-
 - growth is real
 - acquisition-driven
 - not primarily price-driven
 
 ## Customer behaviour
-
 - small basket sizes dominate
 - repeat purchasing improved over time
 - retention increased after 2025
 
 ## Lifecycle understanding
-
 - cohort analysis
 - retention decay
 - returning revenue contribution
 
 ## Acquisition analysis
-
 - channels behave similarly
 - no strong session-level differences
 - no obvious long-term channel winner
@@ -833,7 +736,7 @@ You classify users into groups:
 
 | Segment | Meaning |
 |---|---|
-| Champions | buy often + recently + high spend |
+| Champions | buy often, recently & show high spendings  |
 | Loyal | repeat customers |
 | At Risk | used to buy but disappeared |
 | New Customers | recently acquired |
@@ -841,22 +744,18 @@ You classify users into groups:
 
 # Metrics
 
-*Definitions of the core RFM metrics — Recency, Frequency and Monetary value.*
+*Definitions of the core Recency, Frequency and Monetary (RFM) metrics value.*
 
 ## Recency
 
 Days since last order.
-
-Recency Days = Current Date − Last Purchase Date
-
-Customer Lifespan = Last Purchase Date − First Purchase Date
+- Recency Days = Current Date − Last Purchase Date
+- Customer Lifespan = Last Purchase Date − First Purchase Date
 
 ## Frequency
-
 Total orders.
 
 ## Monetary
-
 Total spend.
 
 # Why this matters
@@ -864,7 +763,6 @@ Total spend.
 *Why RFM metrics are useful for CRM targeting, retention campaigns and personalisation.*
 
 This directly supports:
-
 - CRM targeting
 - retention campaigns
 - personalisation
@@ -1002,8 +900,7 @@ FROM final_rfm_table;
 
 ![Query result screenshot](images/image17.png)
 
-79,745 total rows = 79,745 unique users, so there's no duplication
-from the joins — grain control holds.
+79745 total rows = 79745 unique users, so there's no duplication from the joins -> grain control holds.
 
 ```sql
 SELECT * FROM final_rfm_table
@@ -1012,8 +909,7 @@ WHERE recency_days < 0 OR customer_lifespan_days < 0;
 
 ![Query result screenshot](images/image22.png)
 
-No rows returned — no invalid date calculations (e.g. future dates or
-reversed lifespans).
+No rows returned, shows there is no invalid date calculations (e.g. future dates or reversed lifespans).
 
 ```sql
 SELECT * FROM final_rfm_table
@@ -1022,8 +918,7 @@ WHERE ABS(total_gross_revenue - (net_revenue + cancelled_revenue + returned_reve
 
 ![Query result screenshot](images/image22.png)
 
-Gross revenue correctly equals the sum of net, cancelled and returned
-revenue — no leakage or double counting. The waterfall model is
+Gross revenue correctly equals the sum of net, cancelled and returned revenue — no leakage or double counting. The waterfall model is
 internally consistent.
 
 ```sql
@@ -1035,8 +930,7 @@ ORDER BY customers DESC;
 
 ![Query result screenshot](images/image31.png)
 
-Segmentation looks informative, though the large "At Risk + Churn Risk"
-share suggests retention is the main business challenge.
+Segmentation looks informative, though the large "At Risk + Churn Risk" share suggests retention is the main business challenge.
 
 **Summary**: the RFM pipeline is structurally sound and passes core data
 integrity checks.
@@ -1047,16 +941,12 @@ integrity checks.
 
 ## Overview
 
-This project analyses customer lifecycle behaviour using the TheLook
-Ecommerce Dataset from Google BigQuery Public Datasets, moving beyond
-descriptive KPI reporting toward behavioural analytics, lifecycle
-modelling, customer segmentation, retention thinking and revenue
-quality analysis.
+This project analyses customer lifecycle behaviour using the TheLook Ecommerce Dataset from Google BigQuery Public Datasets, moving beyond
+descriptive KPI reporting toward behavioural analytics, lifecycle modelling, customer segmentation, retention thinking and revenue quality analysis.
 
 # Business questions
 
 *The core business questions the RFM analysis sets out to answer.*
-
 - Which customers are most valuable?
 - Which customers are likely to churn?
 - Is business growth driven by acquisition or retention?
@@ -1064,80 +954,10 @@ quality analysis.
 - How much revenue is lost through returns and cancellations?
 - Which customer segments drive long-term value?
 
-# Dataset structure
 
-*The subset of tables and fields used for the RFM analysis.*
+Core relationship: users -> orders -> order_items
 
-| Table | Description |
-|---|---|
-| users | customer information |
-| orders | one row per order |
-| order_items | one row per product within an order |
-| events | customer browsing/session behaviour |
-
-Core relationship: users → orders → order_items
-
-# Analytical approach
-
-*The step-by-step method used to build the RFM segmentation.*
-
-Raw transactional data → customer lifecycle modelling → frequency
-analysis → revenue decomposition → RFM feature engineering → customer
-scoring → behavioural segmentation
-
-# Key analyses performed
-
-*Summary of the analytical steps carried out, from purchase frequency to customer segmentation.*
-
-## 1. Customer lifecycle analysis
-
-Built customer-level lifecycle metrics (first/last purchase date,
-lifespan, recency, total orders). Business growth is primarily
-acquisition-driven, though returning customer revenue increases over
-time and retention improves as the business matures.
-
-# 2. Purchase frequency analysis
-
-*How often customers purchase, used as an input to the Frequency score.*
-
-Most customers purchase infrequently, and repeat purchase cadence
-varies substantially — customer behaviour is highly heterogeneous.
-
-# 3. Revenue waterfall modelling
-
-*How revenue is built up and attributed across customers and orders.*
-
-Gross Revenue = Net Revenue + Cancelled Revenue + Returned Revenue
-
-A small subset of customers generates disproportionate return
-behaviour, so revenue quality differs significantly across customers.
-
-# 4. RFM feature engineering
-
-*Deriving the Recency, Frequency and Monetary features from raw order data in SQL.*
-
-Built customer-level behavioural features (Recency, Frequency,
-Monetary value, lifespan, purchase frequency, return impact), with the
-final table at 1 row = 1 customer to keep the grain stable.
-
-# 5. RFM scoring
-
-*Scoring each customer on Recency, Frequency and Monetary value.*
-
-Customers were ranked using quintile-based scoring (recency, frequency,
-monetary score), normalising behaviour into comparable groups.
-
-# 6. Customer segmentation
-
-*Grouping customers into lifecycle segments (e.g. Champions, At Risk, Lost) based on RFM scores.*
-
-Customers were classified into VIP, Loyal, New Customers, At Risk,
-Churn Risk, One-time Buyers, High Return Customers and Regular
-Customers. The large "At Risk" segment suggests retention deterioration
-over time, while a strong inflow of new customers shows acquisition
-remains healthy.
-
-# Key business insights
+# RFM insights
 
 *The headline findings from the RFM segmentation.*
 
